@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PiTest Analyzer — Testez vos tests avant qu'ils ne vous trahissent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0e0e0f;
+      --bg-card: #151516;
+      --bg-card-hover: #1a1a1b;
+      --border: rgba(255,255,255,0.07);
+      --border-hover: rgba(255,255,255,0.14);
+      --text: #e8e6e1;
+      --text-muted: #7a7875;
+      --text-dim: #4a4845;
+      --green: #4ade9a;
+      --green-dim: rgba(74,222,154,0.12);
+      --green-border: rgba(74,222,154,0.25);
+      --purple: #a78bfa;
+      --purple-dim: rgba(167,139,250,0.12);
+      --purple-border: rgba(167,139,250,0.25);
+      --amber: #fbbf24;
+      --red: #f87171;
+      --font: 'DM Sans', sans-serif;
+      --mono: 'DM Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 16px;
+      line-height: 1.65;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Grid noise background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+              linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    header {
+      padding: 4rem 0 3rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .conf-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 4px 10px;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.04em;
+    }
+
+    .conf-tag::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      display: inline-block;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    h1 {
+      font-size: clamp(1.75rem, 5vw, 2.5rem);
+      font-weight: 300;
+      line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--text-muted);
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 300;
+      max-width: 520px;
+    }
+
+    /* Section */
+    section { padding: 3rem 0; border-bottom: 1px solid var(--border); }
+    section:last-child { border-bottom: none; }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Cards */
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    @media (max-width: 540px) {
+      .cards { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--bg-card);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      transition: background 0.15s;
+    }
+
+    .card:hover { background: var(--bg-card-hover); }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      width: fit-content;
+    }
+
+    .badge-prompt {
+      background: var(--purple-dim);
+      color: var(--purple);
+      border: 1px solid var(--purple-border);
+    }
+
+    .badge-skill {
+      background: var(--green-dim);
+      color: var(--green);
+      border: 1px solid var(--green-border);
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .card-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      flex: 1;
+      line-height: 1.6;
+    }
+
+    .card-when {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-family: var(--mono);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-family: var(--font);
+      font-size: 0.875rem;
+      font-weight: 400;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      width: 100%;
+      justify-content: center;
+    }
+
+    .btn:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .btn-primary {
+      background: var(--green-dim);
+      border-color: var(--green-border);
+      color: var(--green);
+    }
+
+    .btn-primary:hover {
+      background: rgba(74,222,154,0.18);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .btn-secondary {
+      background: var(--purple-dim);
+      border-color: var(--purple-border);
+      color: var(--purple);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(167,139,250,0.18);
+      border-color: var(--purple);
+      color: var(--purple);
+    }
+
+    /* Steps */
+    .steps { display: flex; flex-direction: column; gap: 0; }
+
+    .step {
+      display: flex;
+      gap: 1.25rem;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .step:last-child { border-bottom: none; }
+
+    .step-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      width: 20px;
+      flex-shrink: 0;
+      padding-top: 3px;
+    }
+
+    .step-body {}
+
+    .step-title {
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .step-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    code {
+      font-family: var(--mono);
+      font-size: 0.8em;
+      background: rgba(255,255,255,0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--text);
+    }
+
+    /* Prompt section */
+    .prompt-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .prompt-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.875rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .prompt-header-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    .copy-btn {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+      letter-spacing: 0.04em;
+    }
+
+    .copy-btn:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    .copy-btn.copied {
+      border-color: var(--green-border);
+      color: var(--green);
+    }
+
+    .prompt-content {
+      padding: 1.25rem;
+      font-family: var(--mono);
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+
+    .prompt-content::-webkit-scrollbar { width: 4px; }
+    .prompt-content::-webkit-scrollbar-track { background: transparent; }
+    .prompt-content::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 2px; }
+
+    .prompt-highlight { color: var(--amber); }
+    .prompt-section { color: var(--green); }
+
+    /* Footer */
+    footer {
+      padding: 2.5rem 0 3rem;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-text {
+      font-size: 0.8125rem;
+      color: var(--text-dim);
+      font-family: var(--mono);
+    }
+
+    .footer-text a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .footer-text a:hover { color: var(--text); }
+
+    .punchline {
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 0.8125rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="conf-tag">ressources de conférence</div>
+    <h1>Testez vos tests<br><em>avant qu'ils ne vous trahissent</em></h1>
+    <p class="subtitle">Le mutation testing avec PiTest — deux formats pour repartir avec l'outillage dans les mains.</p>
+  </header>
+
+  <section>
+    <p class="section-label">Choisir son format</p>
+    <div class="cards">
+      <div class="card">
+        <span class="badge badge-prompt">Maxi-prompt</span>
+        <p class="card-title">Prompt standalone</p>
+        <p class="card-desc">Un prompt à coller dans n'importe quelle conversation Claude. Idéal pour tester tout de suite, sans installation.</p>
+        <p class="card-when">→ expérimentation</p>
+        <a href="#prompt" class="btn btn-secondary">Copier le prompt</a>
+      </div>
+      <div class="card">
+        <span class="badge badge-skill">Skill</span>
+        <p class="card-title">Skill installable</p>
+        <p class="card-desc">Un fichier <code>.skill</code> à installer dans Claude. S'active automatiquement dès qu'on parle de PiTest.</p>
+        <p class="card-when">→ industrialisation</p>
+        <a href="pitest-analyzer.skill" download class="btn btn-primary">Télécharger le skill</a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label">Ce que ça fait</p>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">01</span>
+        <div class="step-body">
+          <p class="step-title">Trouve le rapport XML</p>
+          <p class="step-desc">Cherche dans les chemins Maven standard. Si aucun rapport trouvé, vérifie la config <code>pom.xml</code> et peut lancer PiTest lui-même.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">02</span>
+        <div class="step-body">
+          <p class="step-title">Lit le code source et les tests</p>
+          <p class="step-desc">Pour chaque classe mutée, lit le fichier source ET les tests associés avant d'analyser. Détecte le style de test utilisé (AAA, BDD, librairies).</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">03</span>
+        <div class="step-body">
+          <p class="step-title">Analyse en 4 sections actionnables</p>
+          <p class="step-desc">Mutations critiques avec score de risque, faux positifs à exclure du <code>pom.xml</code>, snippets de tests à ajouter, bilan et suggestions de configuration.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="prompt">
+    <p class="section-label">Maxi-prompt</p>
+    <div class="prompt-box">
+      <div class="prompt-header">
+        <span class="prompt-header-label">system-prompt.txt</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">copier</button>
+      </div>
+      <pre class="prompt-content" id="prompt-text"><span class="prompt-highlight">Analyse le projet Maven dans lequel tu te trouves.</span>
+
+Localise le rapport PiTest XML dans target/pit-reports/, lis le code source
+et les tests des classes mutées, puis produis une analyse en 4 sections :
+
+<span class="prompt-section">🐛 1. Mutations critiques</span>
+Les mutants survivants qui impactent la logique métier : classe/méthode/ligne,
+ce que le mutant modifie concrètement, l'impact en production, pourquoi le
+test actuel ne le tue pas. Score de risque 🔴/🟠/🟡.
+
+<span class="prompt-section">🧟 2. Faux positifs écartés</span>
+Les mutants sans valeur réelle (toString, logs, code généré) avec la config
+d'exclusion exacte à ajouter dans le pom.xml.
+
+<span class="prompt-section">🛡️ 3. Tests à renforcer</span>
+Pour chaque mutant critique, un test complet dans le style déjà utilisé dans
+le projet. Commenter l'assertion clé avec : // ← tue le mutant [TYPE] ligne X.
+
+<span class="prompt-section">📊 4. Bilan</span>
+Score actuel, estimation après correction des critiques, zones sans couverture,
+observations sur la qualité de la suite, suggestions de config PiTest.</pre>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label">Installer le skill</p>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">01</span>
+        <div class="step-body">
+          <p class="step-title">Télécharger le fichier</p>
+          <p class="step-desc">Clique sur "Télécharger le skill" ci-dessus pour récupérer le fichier <code>pitest-analyzer.skill</code>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">02</span>
+        <div class="step-body">
+          <p class="step-title">Ouvrir les paramètres Claude</p>
+          <p class="step-desc">Dans Claude.ai → Settings → Skills → Install from file. Sélectionner le fichier téléchargé.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">03</span>
+        <div class="step-body">
+          <p class="step-title">Utiliser depuis la codebase</p>
+          <p class="step-desc">Ouvrir Claude depuis la racine du projet Maven. Le skill se déclenche automatiquement dès qu'on mentionne PiTest ou mutation testing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <span class="footer-text"><a href="https://github.com/victoireladreit/pitest-analyzer">github.com/victoireladreit/pitest-analyzer</a></span>
+      <span class="punchline">le prompt c'est l'expérimentation, le skill c'est l'industrialisation</span>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  function copyPrompt(btn) {
+    const text = document.getElementById('prompt-text').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'copié ✓';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'copier';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+</script>
+
+</body>
+</html>
