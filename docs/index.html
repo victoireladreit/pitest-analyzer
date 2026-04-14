@@ -182,6 +182,26 @@
       border: 1px solid var(--green-border);
     }
 
+    .badge-rules {
+      background: rgba(251,191,36,0.12);
+      color: var(--amber);
+      border: 1px solid rgba(251,191,36,0.25);
+    }
+
+    .cards-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    @media (max-width: 540px) {
+      .cards-3 { grid-template-columns: 1fr; }
+    }
+
     .card-title {
       font-size: 1rem;
       font-weight: 500;
@@ -411,16 +431,51 @@
       <div class="card">
         <span class="badge badge-prompt">Maxi-prompt</span>
         <p class="card-title">Prompt standalone</p>
-        <p class="card-desc">Un prompt à coller dans n'importe quelle conversation Claude. Idéal pour tester tout de suite, sans installation.</p>
-        <p class="card-when">→ expérimentation</p>
+        <p class="card-desc">Un prompt à coller dans n'importe quel assistant IA — Claude, ChatGPT, Gemini, Copilot… Idéal pour tester tout de suite, sans installation.</p>
+        <p class="card-when">→ expérimentation · tous les agents IA</p>
         <a href="#prompt" class="btn btn-secondary">Copier le prompt</a>
       </div>
       <div class="card">
         <span class="badge badge-skill">Skill</span>
         <p class="card-title">Skill installable</p>
         <p class="card-desc">Un fichier <code>.skill</code> à installer dans Claude. S'active automatiquement dès qu'on parle de PiTest.</p>
-        <p class="card-when">→ industrialisation</p>
+        <p class="card-when">→ industrialisation · Claude</p>
         <a href="pitest-analyzer.skill" download class="btn btn-primary">Télécharger le skill</a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label">Rules pour votre éditeur IA</p>
+    <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.6;">Téléchargez le fichier correspondant à votre éditeur, placez-le à la racine de votre projet Maven. L'agent se déclenche automatiquement dès qu'on mentionne PiTest.</p>
+    <div class="cards-3">
+      <div class="card">
+        <span class="badge badge-rules">Cursor</span>
+        <p class="card-title">Cursor Rules</p>
+        <p class="card-desc">Télécharger et renommer en <code>.cursorrules</code> à la racine du projet.</p>
+        <p class="card-when">→ .cursorrules</p>
+        <a href="pitest-analyzer.cursorrules" download=".cursorrules" class="btn">Télécharger</a>
+      </div>
+      <div class="card">
+        <span class="badge badge-rules">Windsurf</span>
+        <p class="card-title">Windsurf Rules</p>
+        <p class="card-desc">Télécharger et renommer en <code>.windsurfrules</code> à la racine du projet.</p>
+        <p class="card-when">→ .windsurfrules</p>
+        <a href="pitest-analyzer.windsurfrules" download=".windsurfrules" class="btn">Télécharger</a>
+      </div>
+      <div class="card">
+        <span class="badge badge-rules">Copilot</span>
+        <p class="card-title">GitHub Copilot</p>
+        <p class="card-desc">Télécharger et placer dans <code>.github/copilot-instructions.md</code> du projet.</p>
+        <p class="card-when">→ .github/copilot-instructions.md</p>
+        <a href="pitest-analyzer.copilot-instructions.md" download="copilot-instructions.md" class="btn">Télécharger</a>
+      </div>
+      <div class="card">
+        <span class="badge badge-rules">Gemini</span>
+        <p class="card-title">Gemini CLI</p>
+        <p class="card-desc">Télécharger et renommer en <code>GEMINI.md</code> à la racine du projet.</p>
+        <p class="card-when">→ GEMINI.md</p>
+        <a href="pitest-analyzer.gemini.md" download="GEMINI.md" class="btn">Télécharger</a>
       </div>
     </div>
   </section>
@@ -453,11 +508,14 @@
   </section>
 
   <section id="prompt">
-    <p class="section-label">Maxi-prompt</p>
+    <p class="section-label">Maxi-prompt — compatible tous agents IA</p>
     <div class="prompt-box">
       <div class="prompt-header">
         <span class="prompt-header-label">system-prompt.txt</span>
-        <button class="copy-btn" onclick="copyPrompt(this)">copier</button>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <a href="prompt.md" class="copy-btn" style="text-decoration:none;">brut ↓</a>
+          <button class="copy-btn" onclick="copyPrompt(this)">copier</button>
+        </div>
       </div>
       <pre class="prompt-content" id="prompt-text"><span class="prompt-highlight">Analyse le projet Maven dans lequel tu te trouves.</span>
 
@@ -483,37 +541,11 @@ observations sur la qualité de la suite, suggestions de config PiTest.</pre>
     </div>
   </section>
 
-  <section>
-    <p class="section-label">Installer le skill</p>
-    <div class="steps">
-      <div class="step">
-        <span class="step-num">01</span>
-        <div class="step-body">
-          <p class="step-title">Télécharger le fichier</p>
-          <p class="step-desc">Clique sur "Télécharger le skill" ci-dessus pour récupérer le fichier <code>pitest-analyzer.skill</code>.</p>
-        </div>
-      </div>
-      <div class="step">
-        <span class="step-num">02</span>
-        <div class="step-body">
-          <p class="step-title">Ouvrir les paramètres Claude</p>
-          <p class="step-desc">Dans Claude.ai → Settings → Skills → Install from file. Sélectionner le fichier téléchargé.</p>
-        </div>
-      </div>
-      <div class="step">
-        <span class="step-num">03</span>
-        <div class="step-body">
-          <p class="step-title">Utiliser depuis la codebase</p>
-          <p class="step-desc">Ouvrir Claude depuis la racine du projet Maven. Le skill se déclenche automatiquement dès qu'on mentionne PiTest ou mutation testing.</p>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <footer>
     <div class="footer-inner">
       <span class="footer-text"><a href="https://github.com/victoireladreit/pitest-analyzer">github.com/victoireladreit/pitest-analyzer</a></span>
-      <span class="punchline">le prompt c'est l'expérimentation, le skill c'est l'industrialisation</span>
+      <span class="footer-text"><a href="llms.txt">llms.txt</a></span>
     </div>
   </footer>
 

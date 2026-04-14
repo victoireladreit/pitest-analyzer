@@ -1,7 +1,7 @@
 # pitest-analyzer
 
-Analyse en profondeur un rapport PiTest pour un projet Maven Java/Kotlin.  
-Deux formats : un **prompt standalone** à coller dans Claude, et un **skill installable** qui se déclenche automatiquement.
+Analyse en profondeur un rapport PiTest pour un projet Maven Java/Kotlin.
+Deux formats : un **prompt standalone** compatible avec tous les agents IA (Claude, ChatGPT, Gemini, Copilot…), et un **skill installable** pour Claude qui se déclenche automatiquement.
 
 → **[Page de téléchargement](https://victoireladreit.github.io/pitest-analyzer)**
 
@@ -23,17 +23,29 @@ Donné un projet Maven avec des tests, le skill :
 
 ## Utiliser le prompt standalone
 
-Copier le contenu de [`docs/index.html`](docs/index.html) → section "Maxi-prompt", ou directement depuis [la page web](https://victoireladreit.github.io/pitest-analyzer).
+Compatible avec tous les assistants IA : Claude, ChatGPT, Gemini, GitHub Copilot, Cursor…
 
-Coller dans une conversation Claude ouverte depuis la racine du projet Maven.
+- **Texte brut** : [`docs/prompt.md`](docs/prompt.md) ou [depuis GitHub Pages](https://victoireladreit.github.io/pitest-analyzer/prompt.md)
+- **Avec aperçu** : [page de téléchargement](https://victoireladreit.github.io/pitest-analyzer) → section "Maxi-prompt"
+
+Coller dans une conversation ouverte depuis la racine du projet Maven.
 
 ---
 
-## Installer le skill
+## Installer le skill (Claude Code)
 
-1. Télécharger [`pitest-analyzer.skill`](https://victoireladreit.github.io/pitest-analyzer/pitest-analyzer.skill)
-2. Dans Claude.ai → Settings → Skills → Install from file
-3. Ouvrir Claude depuis la racine du projet — le skill se déclenche automatiquement dès qu'on mentionne PiTest ou mutation testing
+Télécharger [`pitest-analyzer.skill`](https://victoireladreit.github.io/pitest-analyzer/pitest-analyzer.skill) et extraire dans `~/.claude/skills/` (global) ou `.claude/skills/` (projet).
+
+## Rules pour éditeurs IA (Cursor, Windsurf, Copilot, Gemini)
+
+Télécharger le fichier correspondant depuis [la page de téléchargement](https://victoireladreit.github.io/pitest-analyzer) et le placer à la racine du projet Maven.
+
+| Éditeur | Nom cible |
+|---|---|
+| Cursor | `.cursorrules` |
+| Windsurf | `.windsurfrules` |
+| GitHub Copilot | `.github/copilot-instructions.md` |
+| Gemini CLI | `GEMINI.md` |
 
 ---
 
@@ -42,8 +54,14 @@ Coller dans une conversation Claude ouverte depuis la racine du projet Maven.
 ```
 pitest-analyzer/
 ├── docs/
-│   ├── index.html              ← GitHub Pages (landing page)
-│   └── pitest-analyzer.skill   ← fichier d'installation du skill
+│   ├── index.html                              ← GitHub Pages (landing page)
+│   ├── prompt.md                               ← prompt texte brut (tous agents IA)
+│   ├── llms.txt                                ← index lisible par les agents IA
+│   ├── pitest-analyzer.skill                   ← skill installable (Claude)
+│   ├── pitest-analyzer.cursorrules             ← rules (Cursor)
+│   ├── pitest-analyzer.windsurfrules           ← rules (Windsurf)
+│   ├── pitest-analyzer.copilot-instructions.md ← instructions (GitHub Copilot)
+│   └── pitest-analyzer.gemini.md              ← instructions (Gemini CLI)
 └── README.md
 ```
 
@@ -53,10 +71,10 @@ pitest-analyzer/
 
 - Projet Maven (Java ou Kotlin)
 - Plugin `pitest-maven` configuré dans le `pom.xml` (ou laisser le skill vérifier/lancer)
-- Claude avec les skills activés (pour le `.skill`), ou n'importe quel accès Claude (pour le prompt)
+- N'importe quel assistant IA pour le prompt standalone, Claude avec les skills activés pour le `.skill`
 
 Pour Kotlin : vérifier la présence du plugin `pitest-kotlin` dans les dépendances.
 
 ---
 
-*Talk "Testez vos tests avant qu'ils ne vous trahissent : le mutation testing!" — le prompt c'est l'expérimentation, le skill c'est l'industrialisation.*
+*Talk "Testez vos tests avant qu'ils ne vous trahissent : le mutation testing!"*

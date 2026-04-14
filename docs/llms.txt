@@ -1,0 +1,40 @@
+# PiTest Analyzer
+
+> Analyse en profondeur d'un rapport de mutation testing PiTest pour projets Maven Java/Kotlin.
+
+Ce projet fournit un prompt utilisable avec n'importe quel assistant IA (Claude, ChatGPT, Gemini, GitHub Copilot, Cursor…) pour analyser les mutants survivants PiTest et proposer des tests correctifs.
+
+## Utilisation
+
+Copiez le prompt ci-dessous dans votre assistant IA, depuis la racine de votre projet Maven.
+
+## Ressources
+
+- [Prompt (texte brut)](https://victoireladreit.github.io/pitest-analyzer/prompt.md): Le prompt à copier-coller dans n'importe quel assistant IA
+- [Skill Claude](https://victoireladreit.github.io/pitest-analyzer/pitest-analyzer.skill): Fichier .skill pour installation automatique dans Claude
+- [Cursor Rules](https://victoireladreit.github.io/pitest-analyzer/pitest-analyzer.cursorrules): Règles pour Cursor (renommer en .cursorrules à la racine du projet)
+- [Windsurf Rules](https://victoireladreit.github.io/pitest-analyzer/pitest-analyzer.windsurfrules): Règles pour Windsurf (renommer en .windsurfrules à la racine du projet)
+- [GitHub Copilot Instructions](https://victoireladreit.github.io/pitest-analyzer/pitest-analyzer.copilot-instructions.md): Instructions pour Copilot (placer dans .github/copilot-instructions.md)
+- [Gemini CLI](https://victoireladreit.github.io/pitest-analyzer/pitest-analyzer.gemini.md): Instructions pour Gemini CLI (renommer en GEMINI.md à la racine du projet)
+- [Page de téléchargement](https://victoireladreit.github.io/pitest-analyzer): Landing page avec tous les formats
+
+## Documentation
+
+- [README](https://raw.githubusercontent.com/victoireladreit/pitest-analyzer/main/README.md)
+- [Code source](https://github.com/victoireladreit/pitest-analyzer)
+
+## Ce que le prompt fait
+
+1. Localise le rapport XML PiTest dans les chemins Maven standard (target/pit-reports/)
+2. Lit le code source et les tests des classes mutées avant d'analyser
+3. Produit 4 sections actionnables :
+   - Mutations critiques avec score de risque (🔴/🟠/🟡)
+   - Faux positifs à exclure avec config pom.xml exacte
+   - Snippets de tests à ajouter dans le style détecté (AAA/BDD)
+   - Bilan, estimation du gain de score, suggestions de config PiTest
+
+## Prérequis
+
+- Projet Maven (Java ou Kotlin)
+- Plugin pitest-maven configuré dans le pom.xml
+- Pour Kotlin : plugin pitest-kotlin dans les dépendances
