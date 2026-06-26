@@ -61,7 +61,8 @@ pitest-analyzer/
 │   ├── pitest-analyzer.cursorrules             ← rules (Cursor)
 │   ├── pitest-analyzer.windsurfrules           ← rules (Windsurf)
 │   ├── pitest-analyzer.copilot-instructions.md ← instructions (GitHub Copilot)
-│   └── pitest-analyzer.gemini.md              ← instructions (Gemini CLI)
+│   ├── pitest-analyzer.gemini.md              ← instructions (Gemini CLI)
+│   └── slides-mutation-testing.pptx           ← slides de présentation
 └── README.md
 ```
 
@@ -78,3 +79,5 @@ Pour Kotlin : vérifier la présence du plugin `pitest-kotlin` dans les dépenda
 ---
 
 *Talk "Testez vos tests avant qu'ils ne vous trahissent : le mutation testing!"*
+
+→ **[Slides de présentation](docs/slides-mutation-testing.pptx)**
